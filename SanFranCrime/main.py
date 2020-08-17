@@ -17,6 +17,7 @@ import re
 # Input data files are available in the read-only "../input/" directory
 # For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
 def truncate(string):
+    "Removes 'block' from beginning of string. Makes addresses easier to process"
     string = string.lower()
     index = string.find('block')
     if index!=-1:
