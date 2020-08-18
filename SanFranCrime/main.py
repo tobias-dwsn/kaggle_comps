@@ -123,8 +123,10 @@ def create_csv(X_test, clf, features):
     y_proba = clf.predict_proba(X_test)
     df = pd.DataFrame(y_proba, columns = clf.classes_)
     df.to_csv('result6.csv', index=True, header=True, index_label = 'Id')
-    
+
+#pre-process training and test data
 X, y, X_test, features = prepare_data()
+
 #only use the features that are contained in both test and training data
 #this is needed due to one-hot encoding
 X_features = set(X.columns)
@@ -135,4 +137,5 @@ X, X_test = X[common_features], X_test[common_features]
 #create and train classifiers
 clf = run_classifiers(X=X, y=y)
 
+#write to csv
 create_csv(X_test,clf, features)
