@@ -41,6 +41,7 @@ def prepare_data():
     """
     df_train = pd.read_csv('/kaggle/input/sf-crime/train.csv.zip')
     df_test = pd.read_csv('/kaggle/input/sf-crime/test.csv.zip')
+    #get data from https://www.kaggle.com/c/sf-crime/data
     #get rid of classes which occur less than 3 times: they disrupt cross validation
     offence_counts = df_train['Category'].value_counts()
     rare_offences = offence_counts[offence_counts<3].index
