@@ -25,6 +25,7 @@ def truncate(string):
     else:
         return string
 def choose_first(string):
+    "Picks first street where two are given"
     string=string.lower()
     index = string.find('/')
     if index!=-1:
@@ -32,6 +33,7 @@ def choose_first(string):
     else:
         return string
 def prepare_data():
+    "Pre-processes training and test data"
     df_train = pd.read_csv('/kaggle/input/sf-crime/train.csv.zip')#.iloc[:100000]
     df_test = pd.read_csv('/kaggle/input/sf-crime/test.csv.zip')#.iloc[:100000]
     #get full feature_list
@@ -108,70 +110,29 @@ def prepare_data():
 
 
 def run_classifiers(X, y):
-    #dummy to compare
-    #dummy_clf = DummyClassifier(strategy = 'stratified')
-    #print('dummy scores:')
-    #print(cross_val_score(dummy_clf, X, y, cv=3))
-    
-    #X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1)
-    #clf = tree.DecisionTreeClassifier()
-    #param_grid = {'max_depth': [18,21,24,27,31,33], 'min_samples_split': [200,250,300,350]}
-    #GridSearch = GridSearchCV(clf, param_grid, scoring = 'neg_log_loss',cv=3)
-    #GridSearch.fit(X, y)
-    #print('Decision Tree:')
-    #print(GridSearch.cv_results_['mean_test_score'])
-    
+    "Creates and trains classifier"    
     clf = RandomForestClassifier(max_depth=18,min_samples_split=400)
     print('starting fit')
     clf.fit(X,y)
     print('fit done')
-    #param_grid = {'max_depth': [18], 'min_samples_split': [200,400,600]}
-    #GridSearch = GridSearchCV(clf, param_grid, scoring = 'neg_log_loss',cv=3)
-    #GridSearch.fit(X, y)
-    #print('Random Forest:')
-    #print(GridSearch.cv_results_['mean_test_score'])
-    """
-    min_samples_splits = [200, 250, 300]
-    max_depths = [30,32]
-    for min_samples_split in min_samples_splits:
-        for max_depth in max_depths:
-            clf = tree.DecisionTreeClassifier(max_depth=max_depth, min_samples_split=min_samples_split)
-            score = cross_validate(clf, X, y, cv=3, scoring = 'neg_log_loss')
-            #clf.fit(X_train, y_train)
-            #y_train_pred = clf.predict(X_train)
-            #train_score = accuracy_score(y_train, y_train_pred)
-            #y_pred = clf.predict(X_val)
-            #test_score = accuracy_score(y_val, y_pred)
-            print('min samples split=', min_samples_split)
-            print('max depth:', max_depth)
-            print('score =', score)
-            #print('train score:')
-            #print(train_score)
-            #print('test score:')
-            #print(test_score)
-            print('\n')
-    """
     return(clf)
+
 def create_csv(X_test, clf, features):
+    """Predicts the probablity of each crime type for each example in the test data. 
+    Writes result to .csv"""
     y_proba = clf.predict_proba(X_test)
     df = pd.DataFrame(y_proba, columns = clf.classes_)
     df.to_csv('result6.csv', index=True, header=True, index_label = 'Id')
     
 X, y, X_test, features = prepare_data()
+#only use the features that are contained in both test and training data
+#this is needed due to one-hot encoding
 X_features = set(X.columns)
 X_test_features = set(X_test.columns)
 common_features = X_features.intersection(X_test_features)
 X, X_test = X[common_features], X_test[common_features]
+
+#create and train classifiers
 clf = run_classifiers(X=X, y=y)
 
 create_csv(X_test,clf, features)
-starting fit
-fit done
-clf2.fit(X, y)
----------------------------------------------------------------------------
-NameError                                 Traceback (most recent call last)
-<ipython-input-2-89a61e12f444> in <module>
-----> 1 clf2.fit(X, y)
-
-NameError: name 'clf2' is not defined
-X_test
